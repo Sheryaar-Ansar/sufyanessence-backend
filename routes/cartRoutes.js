@@ -7,5 +7,7 @@ router.post('/cart/add', cartController.addToCart);
 
 // Route to get the current cart
 router.get('/cart', cartController.getCart);
+router.put('/cart/update-quantity', cartController.updateCartQuantity)
+router.delete('/cart/remove', cartController.removeFromCart)
 
 module.exports = router;

@@ -31,7 +31,7 @@ const createOrder = async (req, res) => {
     const orderItems = cart.items.map(i => ({
       product: i.product._id,
       name: i.product.title,
-      price: i.product.price,
+      price: i.product.discountedPrice,
       quantity: i.quantity
     }));
 
@@ -103,7 +103,7 @@ const getAllOrders = async (req, res) => {
 
     const orders = await Order.find()
       .populate("user", "name email") // Populate user name & email
-      .populate("orderItems.product", "title price") // Populate product title & price
+      .populate("orderItems.product", "title discountedPrice") // Populate product title & price
       .sort({ createdAt: -1 }); // Most recent orders first
 
     if (!orders || orders.length === 0) {

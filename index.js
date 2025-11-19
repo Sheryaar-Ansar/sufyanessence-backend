@@ -11,6 +11,7 @@ const categoryRoutes = require('./routes/categoryRoutes');
 const reviewRoutes = require('./routes/reviewRoutes')
 const cartRoutes = require('./routes/cartRoutes')
 const dashboardRoutes = require('./routes/dashboardRoutes')
+const trueOrigin = [process.env.FRONTEND_LINK, process.env.ADMIN_LINK]
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -19,7 +20,12 @@ connectDB();
 
 app.use(express.json());
 app.use(cookieParser())
-app.use(cors())
+app.use(cors({
+    origin: trueOrigin,
+    credentials: true,
+    methods: ['POST', 'GET', 'PUT', 'PATCH', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}))
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/uploads/reviews', express.static(path.join(__dirname, 'uploads')));
 
