@@ -39,7 +39,7 @@ const createOrder = async (req, res) => {
     const itemsPrice = round2(
       orderItems.reduce((sum, i) => sum + i.price * i.quantity, 0)
     );
-    const shippingPrice = itemsPrice >= 100 ? 0 : 10;
+    const shippingPrice = itemsPrice >= 5000 ? 0 : 200;
     const taxPrice = 0;
     const totalPrice = round2(itemsPrice + shippingPrice + taxPrice);
 

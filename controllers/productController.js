@@ -32,7 +32,7 @@ const getAllProducts = async (req, res) => {
             if (maxPrice) filter.price.$lte = Number(maxPrice)
         }
         if (search) {
-            filter.name = { $regex: search, $options: 'i' }
+            filter.title = { $regex: search, $options: 'i' }
         }
         const TotalProducts = await Product.countDocuments(filter)
         const products = await Product.find(filter)

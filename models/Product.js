@@ -41,7 +41,7 @@ const ProductSchema = new mongoose.Schema({
     },
     subcategory: {
         type: String,
-        required: true
+        default: ''
     },
     reviews: [{
         type: mongoose.Schema.Types.ObjectId,
