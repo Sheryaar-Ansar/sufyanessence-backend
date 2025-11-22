@@ -35,6 +35,7 @@ const addToCart = async (req, res) => {
                 res.cookie("cartId", cartId.toString(), {
                     httpOnly: true,
                     secure: true,
+                    sameSite: "none",
                     maxAge: 30 * 24 * 60 * 60 * 1000
                 });
 
