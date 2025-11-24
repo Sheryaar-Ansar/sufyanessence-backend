@@ -98,22 +98,26 @@ const round2 = num => Math.round(num * 100) / 100;
 
 const getAllOrders = async (req, res) => {
   try {
-    // Optional: check if user is admin
-    // if (!req.user?.isAdmin) return res.status(403).json({ message: "Access denied" });
+    const { status } = req.query;
 
-    const orders = await Order.find()
-      .populate("user", "name email") // Populate user name & email
-      .populate("orderItems.product", "title discountedPrice") // Populate product title & price
-      .sort({ createdAt: -1 }); // Most recent orders first
+    let filter = {};
 
-    if (!orders || orders.length === 0) {
-      return res.status(404).json({ message: "No orders found" });
+    // Only apply status filter if provided
+    if (status) {
+      filter.status = status;
     }
 
+    const orders = await Order.find(filter)
+      .populate("user", "name email")
+      .populate("orderItems.product", "title discountedPrice")
+      .sort({ createdAt: -1 });
+
+    // Always return an array, even if empty
     res.status(200).json({
-      message: "All orders fetched successfully",
-      orders
+      message: "Orders fetched successfully",
+      orders: orders || []
     });
+
   } catch (error) {
     res.status(500).json({
       message: "Server error",
@@ -121,6 +125,7 @@ const getAllOrders = async (req, res) => {
     });
   }
 };
+
 
 
 const getOrderById = async (req, res) => {
