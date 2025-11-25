@@ -10,19 +10,22 @@ router.post('/products', authenticate, authRole('admin'), createProduct)
 router.get('/products', getAllProducts)
 // Single hover image
 
+// Single image upload (hover)
 router.post('/upload/hover', upload.single('hover'), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ message: "No file uploaded" });
   }
 
-  res.json({ url: `/uploads/${req.file.filename}` });
+  // Cloudinary file path available at req.file.path
+  res.json({ url: req.file.path });
 });
 
-// Multiple images
+// Multiple images upload
 router.post('/upload/images', upload.array('images', 10), (req, res) => {
-  const urls = req.files.map(file => `/uploads/${file.filename}`);
+  const urls = req.files.map(file => file.path); 
   res.json({ urls });
 });
+
 router.get('/products/:id', getProductById)
 router.put('/products/:id', authenticate, authRole('admin'), updateProduct)
 router.delete('/products/:id', authenticate, authRole('admin'), deleteProduct)

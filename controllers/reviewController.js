@@ -5,17 +5,20 @@ const Review = require('../models/Reviews')
 // Assuming your route will be like: POST /api/products/:id/review
 const createReview = async (req, res) => {
     try {
-        const { username, email, comment, rating, images } = req.body;
-        const productId = req.params.id; // get product ID from URL
+        const { username, email, comment, rating } = req.body;
+        const productId = req.params.id;
 
-        // Check if review already exists for this product and email
+        // Check if user already reviewed this product
         const existingReview = await Review.findOne({ product: productId, email });
         if (existingReview) {
             return res.status(400).json({ message: 'You have already reviewed this product' });
         }
+
+        // Use Cloudinary URLs instead of local file paths
         const Canimages = req.files?.length
-            ? req.files.map(file => `/uploads/reviews/${file.filename}`)
+            ? req.files.map(file => file.path)  // <-- CLOUDINARY URL HERE
             : [];
+
         // Create new review
         const newReview = await Review.create({
             product: productId,
@@ -23,7 +26,7 @@ const createReview = async (req, res) => {
             email,
             comment,
             rating,
-            images: Canimages,
+            images: Canimages,  // <-- stored as Cloudinary URLs
             isApprove: false,
         });
 
@@ -35,6 +38,7 @@ const createReview = async (req, res) => {
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 };
+
 
 
 const getAllReviews = async (req, res) => {
