@@ -1,21 +1,30 @@
-const multer = require('multer');
-const path = require('path');
+// upload.js
+const multer = require("multer");
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
+const cloudinary = require("cloudinary").v2;
 
-// Storage settings
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads/'); // folder where files are saved
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    cb(null, uniqueSuffix + path.extname(file.originalname));
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.CLOUD_KEY,
+  api_secret: process.env.CLOUD_SECRET
+});
+
+// CLOUDINARY STORAGE
+const storage = new CloudinaryStorage({
+  cloudinary,
+  params: async (req, file) => {
+    return {
+      folder: "products",                 // folder name on cloudinary
+      allowed_formats: ["jpg", "png", "jpeg", "webp"],
+      public_id: file.originalname.split(".")[0] + "-" + Date.now(),
+    };
   }
 });
 
-// Filter only images
+// ONLY image files
 const fileFilter = (req, file, cb) => {
-  if (file.mimetype.startsWith('image/')) cb(null, true);
-  else cb(new Error('Only image files are allowed!'), false);
+  if (file.mimetype.startsWith("image/")) cb(null, true);
+  else cb(new Error("Only images allowed"), false);
 };
 
 const upload = multer({ storage, fileFilter });
