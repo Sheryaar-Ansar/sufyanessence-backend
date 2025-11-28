@@ -6,7 +6,7 @@ const mongoose = require('mongoose')
 const addToCart = async (req, res) => {
     try {
 
-        let cartId = req.cookies.cartId; 
+        let cartId = req.cookies.cartId;
         const { items } = req.body;
 
         for (let item of items) {
@@ -28,8 +28,7 @@ const addToCart = async (req, res) => {
                     httpOnly: true,
                     secure: true,
                     sameSite: "None",
-                    domain: ".sufyanessence.com",   // REQUIRED FOR MOBILE
-                    path: "/",                      // REQUIRED FOR MOBILE
+                    path: "/",   // keep this
                     maxAge: 30 * 24 * 60 * 60 * 1000
                 });
 
@@ -106,13 +105,13 @@ const updateCartQuantity = async (req, res) => {
         if (!items || items.length === 0) {
             return res.status(400).json({ message: "No items provided." });
         }
-        
+
         const { product: productId, quantity: newQty } = items[0];
-        
+
         if (newQty <= 0) {
             // Forward to remove controller if quantity is zero or less
-            return removeFromCart({ 
-                cookies: req.cookies, 
+            return removeFromCart({
+                cookies: req.cookies,
                 body: { items: [{ product: productId }] },
                 status: (s) => ({ json: (j) => res.status(s).json(j) }) // Mock response for chaining
             }, res);
@@ -120,7 +119,7 @@ const updateCartQuantity = async (req, res) => {
 
         const productObjectId = new mongoose.Types.ObjectId(productId);
         let cart = await Cart.findOne({ cartId });
-        
+
         if (!cart) {
             return res.status(404).json({ message: "Cart not found." });
         }
@@ -137,7 +136,7 @@ const updateCartQuantity = async (req, res) => {
         existingItem.quantity = newQty;
 
         await cart.save();
-        
+
         const updatedCart = await Cart.findById(cart._id).populate('items.product').exec();
         res.status(200).json({ message: "Item quantity updated", cart: updatedCart });
 
@@ -157,12 +156,12 @@ const removeFromCart = async (req, res) => {
         if (!items || items.length === 0) {
             return res.status(400).json({ message: "No items provided." });
         }
-        
+
         const { product: productId } = items[0];
         const productObjectId = new mongoose.Types.ObjectId(productId);
-        
+
         let cart = await Cart.findOne({ cartId });
-        
+
         if (!cart) {
             return res.status(404).json({ message: "Cart not found." });
         }
@@ -173,7 +172,7 @@ const removeFromCart = async (req, res) => {
         );
 
         await cart.save();
-        
+
         const updatedCart = await Cart.findById(cart._id).populate('items.product').exec();
         res.status(200).json({ message: "Item removed from cart", cart: updatedCart });
 
