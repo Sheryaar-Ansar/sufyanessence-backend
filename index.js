@@ -20,8 +20,19 @@ connectDB();
 
 app.use(express.json());
 app.use(cookieParser())
+const allowedOrigins = [
+  process.env.FRONTEND_LINK,
+  process.env.ADMIN_LINK
+];
 app.use(cors({
-    origin: trueOrigin,
+  origin: (origin, callback) => {
+    // allow requests with no origin (like mobile apps, curl, Postman)
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("CORS blocked for origin: " + origin));
+    }
+  },
     credentials: true,
     methods: ['POST', 'GET', 'PUT', 'PATCH', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization']
